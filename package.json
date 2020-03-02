@@ -6,8 +6,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:staged": "jest --passWithNoTests",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "test:staged": "jest --passWithNoTests"
   },
   "keywords": [],
   "author": "",
