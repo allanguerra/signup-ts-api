@@ -1,10 +1,13 @@
 import { SignUpController } from './signup.controller'
 import { MissingParamError, ServerError, InvalidParamError } from '../errors'
 import { EmailValidator } from '../protocols'
+import { StoreAccount, StoreAccountModel } from '../../domain/use-cases/store-account'
+import { AccountModel } from '../../domain/models'
 
 interface SutTypes {
   sut: SignUpController
   emailValidatorStub: EmailValidator
+  storeAccountStub: StoreAccount
 }
 
 const makeEmailValidator = (): EmailValidator => {
@@ -16,13 +19,29 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub()
 }
 
+const makeStoreAccount = (): StoreAccount => {
+  class StoreAccountStub implements StoreAccount {
+    store (account: StoreAccountModel): AccountModel {
+      return {
+        id: 'valid_id',
+        name: 'any name',
+        email: 'any_email@mail.com',
+        password: 'p@ssW0rd'
+      }
+    }
+  }
+  return new StoreAccountStub()
+}
+
 const makeSUT = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator()
-  const sut = new SignUpController(emailValidatorStub)
+  const storeAccountStub = makeStoreAccount()
+  const sut = new SignUpController(emailValidatorStub, storeAccountStub)
 
   return {
     sut,
-    emailValidatorStub
+    emailValidatorStub,
+    storeAccountStub
   }
 }
 
@@ -119,5 +138,23 @@ describe('SignUpController', () => {
     expect(response.statusCode).toBe(500)
     expect(response).toHaveProperty('body')
     expect(response.body).toEqual(new ServerError())
+  })
+
+  test('should call StoreAccount with correct values', () => {
+    const { sut, storeAccountStub } = makeSUT()
+    const storeSpy = jest.spyOn(storeAccountStub, 'store')
+    const httpRequest = {
+      body: {
+        name: 'any name',
+        email: 'any_email@mail.com',
+        password: 'p@ssW0rd'
+      }
+    }
+    sut.handle(httpRequest)
+    expect(storeSpy).toHaveBeenCalledWith({
+      name: 'any name',
+      email: 'any_email@mail.com',
+      password: 'p@ssW0rd'
+    })
   })
 })
