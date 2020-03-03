@@ -7,5 +7,5 @@ export interface StoreAccountModel {
 }
 
 export interface StoreAccount {
-  store (account: StoreAccountModel): AccountModel
+  store (account: StoreAccountModel): Promise<AccountModel>
 }

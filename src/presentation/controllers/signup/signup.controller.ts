@@ -11,7 +11,7 @@ export class SignUpController implements Controller {
     this.storeAccount = storeAccount
   }
 
-  handle (req: HttpRequest): HttpResponse {
+  async handle (req: HttpRequest): Promise<HttpResponse> {
     try {
       const requiredFields = ['name', 'email', 'password']
       for (const field of requiredFields) {
@@ -26,7 +26,7 @@ export class SignUpController implements Controller {
         return badRequest(new InvalidParamError('email'))
       }
 
-      const account = this.storeAccount.store({
+      const account = await this.storeAccount.store({
         name,
         email,
         password
