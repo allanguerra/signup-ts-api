@@ -26,11 +26,16 @@ export class SignUpController implements Controller {
         return badRequest(new InvalidParamError('email'))
       }
 
-      this.storeAccount.store({
+      const account = this.storeAccount.store({
         name,
         email,
         password
       })
+
+      return {
+        statusCode: 200,
+        body: account
+      }
     } catch (error) {
       return serverError()
     }
