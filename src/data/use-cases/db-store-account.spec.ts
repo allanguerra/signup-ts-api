@@ -36,4 +36,16 @@ describe('DbStoreAccount UseCase', () => {
     await sut.store(accountData)
     expect(encryptSpy).toHaveBeenCalledWith('p@ssW0rd')
   })
+
+  test('should throw if Encrypter throws', async () => {
+    const { sut, encrypterStub } = makeSUT()
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      password: 'p@ssW0rd'
+    }
+    jest.spyOn(encrypterStub, 'encrypt').mockRejectedValue(new Error())
+    const promise = sut.store(accountData)
+    await expect(promise).rejects.toThrow()
+  })
 })
