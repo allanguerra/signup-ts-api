@@ -1,6 +1,4 @@
-import { StoreAccount, StoreAccountModel } from '../../domain/use-cases/store-account'
-import { AccountModel } from '../../domain/models/account.model'
-import { Encrypter } from '../protocols/encrypter.protocol'
+import { StoreAccount, StoreAccountModel, AccountModel, Encrypter } from './db-store-account-protocols'
 
 export class DbStoreAccount implements StoreAccount {
   private readonly encrypter: Encrypter

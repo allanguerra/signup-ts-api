@@ -1,5 +1,5 @@
 import { DbStoreAccount } from './db-store-account'
-import { Encrypter } from '../protocols/encrypter.protocol'
+import { Encrypter } from './db-store-account-protocols'
 
 interface SutTypes {
   sut: DbStoreAccount
