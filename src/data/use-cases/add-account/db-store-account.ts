@@ -11,7 +11,7 @@ export class DbStoreAccount implements StoreAccount {
 
   async store (accountData: StoreAccountModel): Promise<AccountModel> {
     const hashedPassword = await this.encrypter.encrypt(accountData.password)
-    await this.storeAccountRepository.store(Object.assign({}, accountData, { password: hashedPassword }))
-    return new Promise(resolve => resolve(null))
+    const account = await this.storeAccountRepository.store(Object.assign({}, accountData, { password: hashedPassword }))
+    return account
   }
 }
