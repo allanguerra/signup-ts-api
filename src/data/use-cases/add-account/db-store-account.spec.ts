@@ -83,4 +83,16 @@ describe('DbStoreAccount UseCase', () => {
       password: 'hashed_password'
     })
   })
+
+  test('should throw if StoreAccountRepository throws', async () => {
+    const { sut, storeAccountRepositoryStub } = makeSUT()
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      password: 'p@ssW0rd'
+    }
+    jest.spyOn(storeAccountRepositoryStub, 'store').mockRejectedValue(new Error())
+    const promise = sut.store(accountData)
+    await expect(promise).rejects.toThrow()
+  })
 })
