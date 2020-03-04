@@ -95,4 +95,20 @@ describe('DbStoreAccount UseCase', () => {
     const promise = sut.store(accountData)
     await expect(promise).rejects.toThrow()
   })
+
+  test('should return an account on succes', async () => {
+    const { sut } = makeSUT()
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      password: 'p@ssW0rd'
+    }
+    const account = await sut.store(accountData)
+    expect(account).toEqual({
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      password: 'hashed_password'
+    })
+  })
 })
