@@ -2,7 +2,7 @@ import { LogControllerDecorator } from './log'
 import { Controller, HttpRequest, HttpResponse } from '../../presentation/protocols'
 
 describe('Log Controller Decorator', () => {
-  interface sutTypes {
+  interface SutTypes {
     sut: LogControllerDecorator
     controllerStub: Controller
   }
@@ -25,7 +25,7 @@ describe('Log Controller Decorator', () => {
     return new ControllerStub()
   }
 
-  const makeSUT = (): sutTypes => {
+  const makeSUT = (): SutTypes => {
     const controllerStub = makeControllerStub()
     const sut = new LogControllerDecorator(controllerStub)
     return {
