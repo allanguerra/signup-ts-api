@@ -1,10 +1,22 @@
 import { LogControllerDecorator } from './log'
 import { Controller, HttpRequest, HttpResponse } from '../../presentation/protocols'
+import { LogErrorRepository } from '../../data/protocols/log-error.repository'
+import { serverError } from '../../presentation/helpers/http.helper'
 
 describe('Log Controller Decorator', () => {
   interface SutTypes {
     sut: LogControllerDecorator
     controllerStub: Controller
+    logErrorRepositoryStub: LogErrorRepository
+  }
+
+  const makeLogErrorRepositoryStub = (): LogErrorRepository => {
+    class LogErrorRepositoryStub implements LogErrorRepository {
+      async log (stack: string): Promise<void> {
+        return new Promise(resolve => resolve())
+      }
+    }
+    return new LogErrorRepositoryStub()
   }
 
   const makeControllerStub = (): Controller => {
@@ -26,11 +38,13 @@ describe('Log Controller Decorator', () => {
   }
 
   const makeSUT = (): SutTypes => {
+    const logErrorRepositoryStub = makeLogErrorRepositoryStub()
     const controllerStub = makeControllerStub()
-    const sut = new LogControllerDecorator(controllerStub)
+    const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)
     return {
       sut,
-      controllerStub
+      controllerStub,
+      logErrorRepositoryStub
     }
   }
 
@@ -67,5 +81,26 @@ describe('Log Controller Decorator', () => {
         password: 'any_password'
       }
     })
+  })
+
+  test('should call LogErrorRepository with correct error message if Controller throws server error', async () => {
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@gmail.com',
+        password: 'any_password'
+      }
+    }
+    const fakeError = new Error()
+    fakeError.stack = 'any_stack'
+    const error = serverError(fakeError)
+
+    const { sut, controllerStub, logErrorRepositoryStub } = makeSUT()
+
+    const logSpy = jest.spyOn(logErrorRepositoryStub, 'log')
+    jest.spyOn(controllerStub, 'handle').mockResolvedValueOnce(error)
+
+    await sut.handle(httpRequest)
+    expect(logSpy).toHaveBeenCalledWith('any_stack')
   })
 })
